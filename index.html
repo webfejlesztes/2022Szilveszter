@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Szilveszteri szerencsekvíz</title>
+    <style>
+        body{font-size: 20px;font-family: sans-serif;color: #333;  }
+    .pitanje{font-weight: 600;}
+    .opcije {margin-bottom: 20px;}
+    .opcije label{display: block;}
+    #prikaziRezultat{font-family: sans-serif;font-size: 20px;
+	background-color: green;
+	color: #fff;
+	border: 0px;
+	border-radius: 3px;
+	padding: 20px;
+	cursor: pointer;
+	margin-bottom: 20px;
+    }
+    #prikaziRezultat:hover{
+	    background-color: greenyellow;
+    }
+    </style>
+</head>
+<body>
+    <img src="lohere.jpg" alt="szerencse_lohere" width="320" height="40">
+    <h3 style="color:green">Szilveszteri szerencsekvíz</h3>
+    <div id="quiz"></div>
+    <button id="prikaziRezultat">Kvíz kiértékelése (1x lehetséges)</button>
+    <div id="results"></div>
+<script>
+    
+    (function(){
+  function sagradiKviz(){
+
+    if (localStorage.getItem("podaciSuSacuvani")=="y")
+      {
+        var sr = localStorage.getItem("rezultatSacuvani");
+        alert("Köszönjük, hogy már részt vett a kvíz játékban. Gratulálunk, hogy " + sr + " pontot ért el!");
+      } 
+        else
+
+      {
+        const izlaz = [];
+    mojaPitanja.forEach(
+      (aktuelnoPitanje, redniBrojPitanja) => {
+
+        const opcije = [];
+
+        for(slovo in aktuelnoPitanje.opcije){
+
+          opcije.push(
+            `<label>
+              <input type="radio" name="pitanje${redniBrojPitanja}" value="${slovo}">
+              ${slovo} :
+              ${aktuelnoPitanje.opcije[slovo]}
+            </label>`
+          );
+        }
+
+        izlaz.push(
+          `<div class="pitanje"> ${aktuelnoPitanje.pitanje} </div>
+          <div class="opcije"> ${opcije.join('')} </div>`
+        );
+      }
+    );
+
+    kvizContainer.innerHTML = izlaz.join('');
+      }  
+    
+  }
+
+  function prikaziRezultat(){
+
+
+
+    if (localStorage.getItem("podaciSuSacuvani")=="y")
+      {
+        var sr = localStorage.getItem("rezultatSacuvani");
+        alert("Köszönjük, hogy már részt vett a kvíz játékban. Gratulálunk, hogy " + sr + " pontot ért el!");
+      } 
+        else
+      {
+        localStorage.setItem("podaciSuSacuvani","y");
+
+        const odgovorContainers = kvizContainer.querySelectorAll('.opcije');
+
+          let numtacan = 0;
+
+          mojaPitanja.forEach( (aktuelnoPitanje, redniBrojPitanja) => {
+
+            const odgovorContainer = odgovorContainers[redniBrojPitanja];
+            const selector = `input[name=pitanje${redniBrojPitanja}]:checked`;
+            const userodgovor = (odgovorContainer.querySelector(selector) || {}).value;
+
+            if(userodgovor === aktuelnoPitanje.tacanodgovor){
+              numtacan++;
+
+              odgovorContainers[redniBrojPitanja].style.color = 'lightgreen';
+            }
+            else{
+              odgovorContainers[redniBrojPitanja].style.color = 'red';
+            }
+          });
+
+          localStorage.setItem("rezultatSacuvani",numtacan);
+
+          resultsContainer.innerHTML = `<h3 style="color:green">Gratulálunk! ${numtacan} pontot értél el a lehetséges ${mojaPitanja.length} pontból.</h3>`;
+
+          document.getElementById("prikaziRezultat").disabled = true;
+
+      }
+	
+   
+  }
+
+  const kvizContainer = document.getElementById('quiz');
+  const resultsContainer = document.getElementById('results');
+  const prikaziRezultatButton = document.getElementById('prikaziRezultat');
+  const mojaPitanja = [
+    {
+      pitanje: "1. Hogyan írjuk helyesen?",
+      opcije: {
+        a: "Búék",
+        b: "BÚÉK",
+        c: "B.Ú.É.K."
+      },
+      tacanodgovor: "b"
+    },
+    {
+      pitanje: "2.	Melyik nyári olimpián nyert aranyérmet Csollány Szilveszter tornász?",
+      opcije: {
+        a: "1992–Barcelona",
+        b: "1996-Atlanta",
+        c: "2020-Sydney"
+      },
+      tacanodgovor: "c"
+    },
+    {
+      pitanje: "3.	Mi Törley (a pezsgőgyár alapítójának) teljes neve?",
+      opcije: {
+        a: "Törley Gyula",
+        b: "Törley Antal",
+        c: "Törley József"
+      },
+      tacanodgovor: "c"
+    },
+    {
+      pitanje: "4. Mióta működik a pezsgőgyár?",
+      opcije: {
+        a: "1882. aug. 1-je óta",
+        b: "1907. júl. 28-a óta",
+        c: "1858. jan. 10-e óta"
+      },
+      tacanodgovor: "a"
+    },
+    {
+      pitanje: "5. Hol található a Törley Gyűjtemény és Látogatóközpont?",
+      opcije: {
+        a: "Budapesten",
+        b: "Kecskeméten",
+        c: "Zalaegerszegen"
+      },
+      tacanodgovor: "a"
+    },
+    {
+      pitanje: "6. Vajon mennyibe kerül a belépőjegy (amely magában foglalja a múzeum, az érlelő pince, a pezsgőkészítési eljárások bemutatását, valamint háromféle technológiával készült pezsgő kóstolóját)?",
+      opcije: {
+        a: "4100 Ft",
+        b: "5300 Ft",
+        c: "6500 Ft"
+      },
+      tacanodgovor: "b"
+    },
+    {
+      pitanje: "7. A vezetés milyen nyelven/nyelveken történik?",
+      opcije: {
+        a: "magyar és francia",
+        b: "magyar",
+        c: "magyar és angol"
+      },
+      tacanodgovor: "b"
+    },
+    {
+      pitanje: "8. Mi történt 1973. január 1-jén (azaz 50 éve)?",
+      opcije: {
+        a: "Demjén Ferenc 3 társával megalapítja a V’Moto-Rock együttest.",
+        b: "Megindul a színes televízió kísérleti adása.",
+        c: "Magyarországon bevezették a postai irányítószámok rendszerét."
+      },
+      tacanodgovor: "c"
+    },
+    {
+      pitanje: "9. Magyarországon mikor tartottak először tűzijátékot?",
+      opcije: {
+        a: "1476-ban, Mátyás és Beatrix esküvőjén.",
+        b: "1686-ban, Buda visszafoglalásakor.",
+        c: "1767-ben, Mária Terézia 50. születésnapján."
+      },
+      tacanodgovor: "a"
+    },
+    {
+      pitanje: "+ 1 Hányadik alkalommal rendezik meg 2023. jan. 1-jén Mága Zoltán újévi koncertjét Budapesten?",
+      opcije: {
+        a: "XIII.",
+        b: "XIV.",
+        c: "XV."
+      },
+      tacanodgovor: "c"
+    }
+  ];
+
+  sagradiKviz();
+
+  prikaziRezultatButton.addEventListener('click', prikaziRezultat);
+})();
+</script>
+</body>
+</html>
